@@ -1,0 +1,8 @@
+ZWSID
+*.pyc
+*.BK
+*.swp
+*.json
+MANIFEST
+dist
+househunt.egg-info
