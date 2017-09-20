@@ -1,6 +1,5 @@
 from househunt import House, Listing, ZillAPI, RFAPI
 import mortgage
-from decimal import Decimal
 
 """
 
@@ -47,14 +46,16 @@ def main():
     	if listing.house.home_type == 'Condo/Co-op':
         	if listing.house.matches_search(beds=2):
         		listing.get_zestimate()
+        		"""
         		try:
         			purchase_price = int(listing.zestimate)
         		except:
         			pass
         		m = mortgage.Mortgage(interest=0.04, amount=purchase_price, months=360)
         		monthly_payment = m.monthly_payment()
+        		"""
         		matches.append(listing)
-        		matches.append(monthly_payment)
+        		#matches.append(monthly_payment)
     print matches
     #email_matches(matches) #this is a placeholder function to email these matches to somebody; right now it just has "pass" in it.
     

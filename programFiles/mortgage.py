@@ -20,7 +20,7 @@ class Mortgage:
     def __init__(self, interest, months, amount):
         self._interest = float(interest)
         self._months = int(months)
-        self._amount = dollar(amount)
+        self._amount = amount
 
     def rate(self):
         return self._interest
@@ -42,7 +42,7 @@ class Mortgage:
 
     def monthly_payment(self):
         pre_amt = float(self.amount()) * self.rate() / (float(MONTHS_IN_YEAR) * (1.-(1./self.month_growth()) ** self.loan_months()))
-        return dollar(pre_amt, round=decimal.ROUND_CEILING)
+        return int(pre_amt)
 
     def total_value(self, m_payment):
         return m_payment / self.rate() * (float(MONTHS_IN_YEAR) * (1.-(1./self.month_growth()) ** self.loan_months()))

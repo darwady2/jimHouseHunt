@@ -16,6 +16,8 @@ from datetime import datetime, timedelta
 
 from fake_useragent import UserAgent
 
+import mortgage
+
 class House(object):
     """
     House class
@@ -255,7 +257,7 @@ class Listing(object):
         self.open_house_end_time = open_house_end_time
 
     def __repr__(self):
-        return "Address: %s - List Price: %s - Zestimate: %s" % (str(self.house), str(self.list_price), str(self.zestimate))
+        return "Address: %s - List Price: $%s - Zestimate: $%s - Monthly Mortgage: $%s" % (str(self.house), str(self.list_price), str(self.zestimate), str(self.monthly_mortgage))
 
     @property
     def detailed(self):
@@ -302,9 +304,22 @@ class Listing(object):
         if is_float(zestimate):
             zestimate = float(zestimate)
         elif is_int(zestimate):
-            zestimate = int(zestimaet)
+            zestimate = int(zestimate)
         self._zestimate = zestimate
 
+    #Dan added in the below two properties
+    @property
+    def monthly_mortgage(self):
+    	return self._monthly_mortgage
+    
+    @monthly_mortgage.setter
+    def monthly_mortgage(self, monthly_mortgage):
+    	if is_float(monthly_mortgage):
+    		monthly_mortgage = int(monthly_mortgage)
+    	elif is_int(monthly_mortgage):
+    		monthly_mortgage = int(monthly_mortgage)
+    	self._monthly_mortgage = monthly_mortgage
+    
     @property
     def days_on_market(self):
         return self._days_on_market
@@ -407,17 +422,29 @@ class Listing(object):
         }
         return d
 
+    def get_monthly_mortgage(self, interest, amount, months):
+    	try:
+    		amount = int(amount)
+    		m = mortgage.Mortgage(interest=interest, amount=amount, months=months)
+    		monthly_payment = m.monthly_payment()
+    		self.monthly_mortgage = monthly_payment
+    	except:
+    		pass
+    
     def get_zestimate(self):
         lc = ListCache()
         lc.remove_old_listings()
         if lc.listing_in_cache(self):
             c_list = lc.retrieve_listing(self)
             self.zestimate = c_list.zestimate
+            self.get_monthly_mortgage(interest=0.04, amount=int(self.zestimate), months=360) #Dan added in
         else:
             z_api = ZillAPI()
             z_list = z_api.get_from_zillow(self.house)
             self.zestimate = z_api.get_zestimate(z_list)
             lc.insert_listing(self)
+            self.get_monthly_mortgage(interest=0.04, amount=int(self.zestimate), months=360) #Dan added in
+            
 
     def matches_search(
         self,
@@ -584,7 +611,7 @@ class RFAPI(object):
         'market': 'boston',
         'mpt': 99,
         'no_outline': 'false',
-        'num_homes': 50, #Could make this 500 or any number to return more results
+        'num_homes': 10, #Could make this 500 or any number to return more results
         'page_number': 1,
         'region_id': 0,
         'region_type': 6,
