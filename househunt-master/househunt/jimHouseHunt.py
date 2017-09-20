@@ -1,4 +1,6 @@
 from househunt import House, Listing, ZillAPI, RFAPI
+import mortgage
+from decimal import Decimal
 
 """
 
@@ -38,14 +40,25 @@ print zestimate
 
 def main():
     matches = []
-    rf_api = RFAPI(region_ids=[29470], load_listings=True, get_zestimates=False)
+    rf_api = RFAPI(region_ids=[29470], load_listings=True, get_zestimates=False) #29740 is Chicago.
+    
+    #Below is a search for only 2 bedroom condos in the Chicagoland region, adding the monthly mortgage payment calculated from the Zestimate.
     for listing in rf_api.listings:
-        print listing
-        if listing.house.matches_search(beds=2):
-            listing.get_zestimate()
-            matches.append(listing)
-    #print rf_api.result_sets[0]["HOME TYPE"]
-    #email_matches(matches)
+    	if listing.house.home_type == 'Condo/Co-op':
+        	if listing.house.matches_search(beds=2):
+        		listing.get_zestimate()
+        		try:
+        			purchase_price = int(listing.zestimate)
+        		except:
+        			pass
+        		m = mortgage.Mortgage(interest=0.04, amount=purchase_price, months=360)
+        		monthly_payment = m.monthly_payment()
+        		matches.append(listing)
+        		matches.append(monthly_payment)
+    print matches
+    #email_matches(matches) #this is a placeholder function to email these matches to somebody; right now it just has "pass" in it.
+    
+    
     
 
 if __name__ == '__main__':
