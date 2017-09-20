@@ -519,33 +519,6 @@ class ZillAPI(object):
     ZIL_XSD = 'http://www.zillow.com/static/xsd/SearchResults.xsd'
     ZWSID = 'X1-ZWz190v4m6e9e3_8b748'
     
-    
-    """
-    Original note / variable structure is below:
-    
-    # Moved ZWSID to an external file to avoid committing to source control. Should be placed in file named 'ZWSID' with the value on the first line
-	ZWSID = ''
-    
-    
-    DAN NOTE: The above is not true anymore; I've hard-coded the ZWSID into the variable above instead.
-    """
-
-    """
-    OLD CODE TO INIT AND GRAB THE ZWSID, BEFORE DAN HARD CODED IT:
-       
-    def __init__(self, zwsid=None, zwsid_filename=None, save_zwsid=False):
-        if zwsid:
-            ZillAPI.set_zwsid(zwsid)
-            if save_zwsid and zwsid_filename:
-                ZillAPI.save_zwsid(zwsid, zwsid_filename)
-            elif save_zwsid and (zwsid_filename is None):
-                raise ValueError("Must provide a zwsid_filename if save_zwsid is True!")
-        elif zwsid_filename:
-            ZillAPI.load_zwsid(zwsid_filename=zwsid_filename)
-        else:
-            ZillAPI.load_zwsid()
-    """
-    
     def __init__(self, zwsid=None, zwsid_filename=None, save_zwsid=False):
         if zwsid:
             ZillAPI.set_zwsid(zwsid)
@@ -611,7 +584,7 @@ class RFAPI(object):
         'market': 'boston',
         'mpt': 99,
         'no_outline': 'false',
-        'num_homes': 500,
+        'num_homes': 10, #Could make this 500 or any number to return more results
         'page_number': 1,
         'region_id': 0,
         'region_type': 6,
@@ -754,14 +727,13 @@ def email_matches(matches):
 
 def main():
     matches = []
-    rf_api = RFAPI(region_ids=[9614,20294,10229], load_listings=True, get_zestimates=False)
+    rf_api = RFAPI(region_ids=[29470], load_listings=True, get_zestimates=False)
     for listing in rf_api.listings:
-        if listing.house.matches_search(beds=2, baths=1.0, sq_ft=900):
-            if listing.matches_search(list_price=500000):
-                listing.get_zestimate()
-                if listing.matches_search(list_price=360000, zestimate=360000):
-                    matches.append(listing)
+        if listing.house.matches_search(beds=2):
+            listing.get_zestimate()
+            matches.append(listing)
     email_matches(matches)
+    print matches
 
 if __name__ == '__main__':
     main()
