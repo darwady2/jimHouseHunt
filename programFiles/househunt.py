@@ -1,4 +1,4 @@
-# house.py
+# househunt.py
 
 import os
 import hashlib
@@ -257,7 +257,7 @@ class Listing(object):
         self.open_house_end_time = open_house_end_time
 
     def __repr__(self):
-        return "Address: %s - List Price: $%s - Zestimate: $%s - Monthly Mortgage: $%s" % (str(self.house), str(self.list_price), str(self.zestimate), str(self.monthly_mortgage))
+        return "Address: %s - List Price: $%s - Zestimate: $%s - Monthly Mortgage: $%s - Monthly Rent Estimate: $%s" % (str(self.house), str(self.list_price), str(self.zestimate), str(self.monthly_mortgage), str(self.rentzestimate))
 
     @property
     def detailed(self):
@@ -307,7 +307,7 @@ class Listing(object):
             zestimate = int(zestimate)
         self._zestimate = zestimate
 
-    #Dan added in the below two properties
+    #Dan added in the below four properties
     @property
     def monthly_mortgage(self):
     	return self._monthly_mortgage
@@ -315,10 +315,22 @@ class Listing(object):
     @monthly_mortgage.setter
     def monthly_mortgage(self, monthly_mortgage):
     	if is_float(monthly_mortgage):
-    		monthly_mortgage = int(monthly_mortgage)
+    		monthly_mortgage = int(monthly_mortgage) #Still want this number to become an integer, even if entered as a float.
     	elif is_int(monthly_mortgage):
     		monthly_mortgage = int(monthly_mortgage)
     	self._monthly_mortgage = monthly_mortgage
+    
+    @property
+    def rentzestimate(self):
+    	return self._rentzestimate
+    
+    @rentzestimate.setter
+    def rentzestimate(self, rentzestimate):
+    	if is_float(rentzestimate):
+    		rentzestimate = int(rentzestimate) #Still want this number to become an integer, even if entered as a float.
+    	elif is_int(rentzestimate):
+    		rentzestimate = int(rentzestimate)
+    	self._rentzestimate = rentzestimate
     
     @property
     def days_on_market(self):
@@ -426,7 +438,11 @@ class Listing(object):
     	try:
     		amount = int(amount)
     		m = mortgage.Mortgage(interest=interest, amount=amount, months=months)
-    		monthly_payment = m.monthly_payment()
+    		base_monthly_payment = m.monthly_payment()
+    		insurance = amount/1000*3.5/12
+    		property_tax_rate = 0.0131
+    		taxes = amount * property_tax_rate / 12
+    		monthly_payment = base_monthly_payment + insurance + taxes
     		self.monthly_mortgage = monthly_payment
     	except:
     		pass
@@ -435,16 +451,43 @@ class Listing(object):
         lc = ListCache()
         lc.remove_old_listings()
         if lc.listing_in_cache(self):
+            z_api = ZillAPI()
+            z_list = z_api.get_from_zillow(self.house)
             c_list = lc.retrieve_listing(self)
             self.zestimate = c_list.zestimate
-            self.get_monthly_mortgage(interest=0.04, amount=int(self.zestimate), months=360) #Dan added in
+            self.get_monthly_mortgage(interest=0.04, amount=int(self.zestimate), months=360)
+            self.rentzestimate = self.get_rentzestimate(z_list)
         else:
             z_api = ZillAPI()
             z_list = z_api.get_from_zillow(self.house)
             self.zestimate = z_api.get_zestimate(z_list)
+            self.get_monthly_mortgage(interest=0.04, amount=int(self.zestimate), months=360)
+            self.rentzestimate = self.get_rentzestimate(z_list)
             lc.insert_listing(self)
-            self.get_monthly_mortgage(interest=0.04, amount=int(self.zestimate), months=360) #Dan added in
-            
+    
+    def get_rentzestimate(self, sr):
+        rentzestimates = []
+        if sr.response:
+        	for prop in sr.response.results.result:
+        		try:
+        			value = prop.rentzestimate.amount.valueOf_
+        			if value not in rentzestimates:
+        				rentzestimates.append(value)
+        		except:
+        			pass
+        if len(rentzestimates) == 1:
+            return rentzestimates[0]
+        elif len(rentzestimates) == 0:
+            return None
+        else:
+            return max(rentzestimates)    
+    
+    def monthly_income(self, rent, mortgage):
+    	try: 
+    		monthly_income = rent-mortgage
+    		return monthly_income
+    	except:
+    		pass
 
     def matches_search(
         self,
@@ -577,7 +620,7 @@ class ZillAPI(object):
 
 
     def get_from_zillow(self, h):
-        params = (('zws-id', ZillAPI.ZWSID), ('address', h.street_address), ('citystatezip', h.zip_code))
+        params = (('zws-id', ZillAPI.ZWSID), ('address', h.street_address), ('citystatezip', h.zip_code), ('rentzestimate', 'true'))
         urlparams = urllib.urlencode(params)
         zurl = "%s?%s" % (ZillAPI.ZIL_URL, urlparams)
         req = requests.get(zurl)
@@ -611,7 +654,7 @@ class RFAPI(object):
         'market': 'boston',
         'mpt': 99,
         'no_outline': 'false',
-        'num_homes': 10, #Could make this 500 or any number to return more results
+        'num_homes': 100, #Could make this 500 or any number to return more results
         'page_number': 1,
         'region_id': 0,
         'region_type': 6,
