@@ -1,11 +1,7 @@
 # jimHouseHunt
 
-To run the file that I coded, go into househunt-master/househunt and run jimHouseHunt.py.
+To run the file that I coded, go into program files and run jimHouseHunt.py.
 
-It will currently return the Zestimate of a real Park Ridge listing on Zillow.
+It will currently look for 100 2-bedroom homes in the Chicago area, get the estimates for monthly mortgage and monthly rental income, and return a list of only those that will generate >= $100 in monthly income. All of that stuff is editable in the script. Using a hard-coded property tax value right now as well.
 
-Listing is here: https://goo.gl/zUCBh3
-
-The script needs this info from a real listing to work:
- - Street Address
- - Zip Code
+Still more work to do on this front but works with hard-coded numbers for the time being.
