@@ -455,13 +455,24 @@ class Listing(object):
             z_list = z_api.get_from_zillow(self.house)
             c_list = lc.retrieve_listing(self)
             self.zestimate = c_list.zestimate
-            self.get_monthly_mortgage(interest=0.04, amount=int(self.zestimate), months=360)
+            #Converts Zestimate to an integer; if it's a string (such as "none") it just keeps it as-is.
+            try:
+            	int_zestimate = int(self.zestimate)
+            except:
+            	int_zestimate = self.zestimate
+            self.get_monthly_mortgage(interest=0.04, amount=int_zestimate, months=360)
             self.rentzestimate = self.get_rentzestimate(z_list)
         else:
             z_api = ZillAPI()
             z_list = z_api.get_from_zillow(self.house)
             self.zestimate = z_api.get_zestimate(z_list)
-            self.get_monthly_mortgage(interest=0.04, amount=int(self.zestimate), months=360)
+            
+            #Converts Zestimate to an integer; if it's a string (such as "none") it just keeps it as-is.
+            try:
+            	int_zestimate = int(self.zestimate)
+            except:
+            	int_zestimate = self.zestimate
+            self.get_monthly_mortgage(interest=0.04, amount=int_zestimate, months=360)
             self.rentzestimate = self.get_rentzestimate(z_list)
             lc.insert_listing(self)
     

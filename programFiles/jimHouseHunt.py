@@ -26,9 +26,12 @@ def main():
     	if listing.house.home_type == 'Condo/Co-op':
         	if listing.house.beds >= 2:       	#Old line: if listing.house.matches_search(beds=2):
         		listing.get_zestimate() #Gets Zestimate and RentZestimate for narrowed down list, then generates monthly mortgage payment from Zestimate.
-        		monthly_income = listing.monthly_income(rent=listing.rentzestimate, mortgage=listing.monthly_mortgage)
-        		if monthly_income > 100:
-        			matches.append(listing)
+        		try:
+        			monthly_income = listing.monthly_income(rent=listing.rentzestimate, mortgage=listing.monthly_mortgage)
+        			if monthly_income > 100:
+        				matches.append(listing)
+        		except:
+        			pass
     print matches
     email_matches(matches)
 
