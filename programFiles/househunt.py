@@ -9,6 +9,7 @@ import csv
 import requests
 import xmltodict
 import searchresults
+import re
 
 from tinydb import TinyDB, Query
 
@@ -243,7 +244,8 @@ class Listing(object):
         mls_id=None,
         open_house_date=None,
         open_house_start_time=None,
-        open_house_end_time=None
+        open_house_end_time=None,
+        listing_url=None
     ):
         self.house = house
         self.list_price = list_price
@@ -255,9 +257,10 @@ class Listing(object):
         self.open_house_date = open_house_date
         self.open_house_start_time = open_house_start_time
         self.open_house_end_time = open_house_end_time
+        self.listing_url = listing_url
 
     def __repr__(self):
-        return "Address: %s - List Price: $%s - Zestimate: $%s - Monthly Mortgage: $%s - Monthly Rent Estimate: $%s" % (str(self.house), str(self.list_price), str(self.zestimate), str(self.monthly_mortgage), str(self.rentzestimate))
+        return "Address: %s - List Price: $%s - Zestimate: $%s - Monthly Mortgage: $%s - Monthly Rent Estimate: $%s - Listing URL: %s" % (str(self.house), str(self.list_price), str(self.zestimate), str(self.monthly_mortgage), str(self.rentzestimate), str(self.listing_url))
 
     @property
     def detailed(self):
@@ -395,6 +398,14 @@ class Listing(object):
     @open_house_end_time.setter
     def open_house_end_time(self, open_house_end_time):
         self._open_house_end_time = open_house_end_time
+    
+    @property
+    def listing_url(self):
+        return self._listing_url
+    
+    @listing_url.setter
+    def listing_url(self, listing_url):
+        self._listing_url = listing_url
 
     @property
     def hsh(self):
@@ -661,7 +672,7 @@ class RFAPI(object):
         'market': 'boston',
         'mpt': 99,
         'no_outline': 'false',
-        'num_homes': 50, #Could make this 500 or any number to return more results
+        'num_homes': 500, #Could make this any number to return more results
         'page_number': 1,
         'region_id': 0,
         'region_type': 6,
@@ -743,7 +754,8 @@ class RFAPI(object):
             for row in reader:
                 ds = zip(headers, row)
                 self.result_sets.append(dict(ds))
-
+	
+	
     def dataset_to_listings(self):
         for rs in self.result_sets:
             try:
@@ -769,7 +781,8 @@ class RFAPI(object):
                     mls_id=rs['LISTING ID'],
                     open_house_date=rs['NEXT OPEN HOUSE DATE'],
                     open_house_start_time=rs['NEXT OPEN HOUSE START TIME'],
-                    open_house_end_time=rs['NEXT OPEN HOUSE END TIME']
+                    open_house_end_time=rs['NEXT OPEN HOUSE END TIME'],
+                    listing_url=rs['URL (SEE http://www.redfin.com/buy-a-home/comparative-market-analysis FOR INFO ON PRICING)']
                 )
                 self.listings.append(l)
             except KeyError:

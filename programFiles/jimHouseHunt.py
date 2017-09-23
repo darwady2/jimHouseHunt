@@ -25,20 +25,26 @@ from sendgrid.helpers.mail import *
 
 
 def email_matches(matches):
+	
 	body = ''
 	for index, listing in enumerate(matches):
-		body += str(index) + str(listing) + "\n"
+		number = index + 1
+		body += str(number) + ":\n" + str(listing) + "\n\n"
 		print body
+	
 	sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 	from_email = Email("darwady2@gmail.com")
-	to_email = Email("darwady2@gmail.com")
-	subject = "Sending with SendGrid is Fun"
-	content = Content("text/plain", "and easy to do anywhere, even with Python")
-	mail = Mail(from_email, subject, to_email, content)
-	response = sg.client.mail.send.post(request_body=mail.get())
-	print(response.status_code)
-	print(response.body)
-	print(response.headers)
+	to_emails_list = ["jskuros@gmail.com", "darwady2@gmail.com", "dave.bremner2@gmail.com"]
+	
+	for email in to_emails_list:
+		to_email = Email(email)
+		subject = "Your Daily House Hunt Digest"
+		content = Content("text/plain", body)
+		mail = Mail(from_email, subject, to_email, content)
+		response = sg.client.mail.send.post(request_body=mail.get())
+		print(response.status_code)
+		print(response.body)
+		print(response.headers)
 
 
 def main():
