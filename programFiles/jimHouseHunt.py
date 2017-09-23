@@ -31,7 +31,9 @@ def email_matches(matches):
 		number = index + 1
 		body += str(number) + ":\n" + str(listing) + "\n\n"
 		print body
+
 	
+	#Sendgrid (getting an unauthorized error)
 	sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 	from_email = Email("darwady2@gmail.com")
 	email_list = ["darwady2@gmail.com", "jskuros@gmail.com", "dave.bremner2@gmail.com"]
@@ -44,6 +46,7 @@ def email_matches(matches):
 		print(response.status_code)
 		print(response.body)
 		print(response.headers)
+	
 
 
 def main():
@@ -69,11 +72,12 @@ def main():
     
     rf_api = RFAPI(region_ids=regions, load_listings=True, get_zestimates=False) 
     
-    for listing in rf_api.listings:
+    for index, listing in enumerate(rf_api.listings):
     	#if listing.house.home_type == home_type:
         	if listing.house.beds >= beds:
         		listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
         		listing.get_monthly_mortgage(property_tax_rate = property_tax_rate, months = months, interest = interest, amount = listing.zestimate)
+        		print 'Getting Listing #' + str(index)
         		try:
         			monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
         			if monthly_income > threshold:
