@@ -555,7 +555,7 @@ class Listing(object):
 class ListCache(object):
 
     DB_FILE = 'listing_db.json'
-    DB_TTL = timedelta(seconds=1)
+    DB_TTL = timedelta(hours=12)
 
     def __init__(self):
         self.db = TinyDB(os.path.join(os.path.join(os.getcwd(), os.path.dirname(__file__)), ListCache.DB_FILE))

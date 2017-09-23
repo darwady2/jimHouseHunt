@@ -34,11 +34,10 @@ def email_matches(matches):
 	
 	sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 	from_email = Email("darwady2@gmail.com")
-	to_emails_list = ["jskuros@gmail.com", "darwady2@gmail.com", "dave.bremner2@gmail.com"]
-	
-	for email in to_emails_list:
+	email_list = ["darwady2@gmail.com", "jskuros@gmail.com", "dave.bremner2@gmail.com"]
+	for email in email_list:
 		to_email = Email(email)
-		subject = "Your Daily House Hunt Digest"
+		subject = "Your Daily Property Hunt Digest"
 		content = Content("text/plain", body)
 		mail = Mail(from_email, subject, to_email, content)
 		response = sg.client.mail.send.post(request_body=mail.get())
@@ -61,7 +60,7 @@ def main():
     
     #Set property filters here.
     beds = 2  #Filters for at least 2 bedroom properties.
-    home_type = 'Condo/Co-op'  #Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
+    home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
     
     #Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
     threshold = 100
@@ -71,7 +70,7 @@ def main():
     rf_api = RFAPI(region_ids=regions, load_listings=True, get_zestimates=False) 
     
     for listing in rf_api.listings:
-    	if listing.house.home_type == home_type:
+    	#if listing.house.home_type == home_type:
         	if listing.house.beds >= beds:
         		listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
         		listing.get_monthly_mortgage(property_tax_rate = property_tax_rate, months = months, interest = interest, amount = listing.zestimate)
