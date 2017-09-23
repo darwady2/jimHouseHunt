@@ -14,21 +14,64 @@ import mortgage
 
 from househunt import House, Listing, ZillAPI, RFAPI
 
+# using SendGrid's Python Library
+# https://github.com/sendgrid/sendgrid-python
+import sendgrid
+import os
+from sendgrid.helpers.mail import *
+
+
+
+
+
 def email_matches(matches):
-    pass
+	body = ''
+	for index, listing in enumerate(matches):
+		body += str(index) + str(listing) + "\n"
+		print body
+	sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+	from_email = Email("darwady2@gmail.com")
+	to_email = Email("darwady2@gmail.com")
+	subject = "Sending with SendGrid is Fun"
+	content = Content("text/plain", "and easy to do anywhere, even with Python")
+	mail = Mail(from_email, subject, to_email, content)
+	response = sg.client.mail.send.post(request_body=mail.get())
+	print(response.status_code)
+	print(response.body)
+	print(response.headers)
+
 
 def main():
+
     matches = []
-    rf_api = RFAPI(region_ids=[29470], load_listings=True, get_zestimates=False) #29740 is Chicago.
     
-    #Below is a search for only 2 bedroom condos in the Chicagoland region, adding the monthly mortgage payment calculated from the Zestimate.
+    #Put region IDs for all regions to search in this list.
+    regions = [29470] #29740 is Chicago. See top comments to add additional region IDs.
+    
+    #Set mortgage calculation details here.
+    property_tax_rate = 0.0344 # 3.44% tax rate, median for Cook County.
+    months = 360 # 30 year mortgage.
+    interest = 0.04 # 4% rate.
+    
+    #Set property filters here.
+    beds = 2  #Filters for at least 2 bedroom properties.
+    home_type = 'Condo/Co-op'  #Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
+    
+    #Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
+    threshold = 100
+    
+    #Below is the script to generate the listings.
+    
+    rf_api = RFAPI(region_ids=regions, load_listings=True, get_zestimates=False) 
+    
     for listing in rf_api.listings:
-    	if listing.house.home_type == 'Condo/Co-op':
-        	if listing.house.beds >= 2:       	#Old line: if listing.house.matches_search(beds=2):
-        		listing.get_zestimate() #Gets Zestimate and RentZestimate for narrowed down list, then generates monthly mortgage payment from Zestimate.
+    	if listing.house.home_type == home_type:
+        	if listing.house.beds >= beds:
+        		listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
+        		listing.get_monthly_mortgage(property_tax_rate = property_tax_rate, months = months, interest = interest, amount = listing.zestimate)
         		try:
-        			monthly_income = listing.monthly_income(rent=listing.rentzestimate, mortgage=listing.monthly_mortgage)
-        			if monthly_income > 100:
+        			monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
+        			if monthly_income > threshold:
         				matches.append(listing)
         		except:
         			pass

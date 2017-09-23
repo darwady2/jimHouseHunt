@@ -434,13 +434,12 @@ class Listing(object):
         }
         return d
 
-    def get_monthly_mortgage(self, interest, amount, months):
+    def get_monthly_mortgage(self, interest, amount, months, property_tax_rate):
     	try:
     		amount = int(amount)
     		m = mortgage.Mortgage(interest=interest, amount=amount, months=months)
     		base_monthly_payment = m.monthly_payment()
     		insurance = amount/1000*3.5/12
-    		property_tax_rate = 0.0131
     		taxes = amount * property_tax_rate / 12
     		monthly_payment = base_monthly_payment + insurance + taxes
     		self.monthly_mortgage = monthly_payment
@@ -460,7 +459,6 @@ class Listing(object):
             	int_zestimate = int(self.zestimate)
             except:
             	int_zestimate = self.zestimate
-            self.get_monthly_mortgage(interest=0.04, amount=int_zestimate, months=360)
             self.rentzestimate = self.get_rentzestimate(z_list)
         else:
             z_api = ZillAPI()
@@ -472,7 +470,6 @@ class Listing(object):
             	int_zestimate = int(self.zestimate)
             except:
             	int_zestimate = self.zestimate
-            self.get_monthly_mortgage(interest=0.04, amount=int_zestimate, months=360)
             self.rentzestimate = self.get_rentzestimate(z_list)
             lc.insert_listing(self)
     
@@ -547,7 +544,7 @@ class Listing(object):
 class ListCache(object):
 
     DB_FILE = 'listing_db.json'
-    DB_TTL = timedelta(hours=12)
+    DB_TTL = timedelta(seconds=1)
 
     def __init__(self):
         self.db = TinyDB(os.path.join(os.path.join(os.getcwd(), os.path.dirname(__file__)), ListCache.DB_FILE))
@@ -629,7 +626,6 @@ class ZillAPI(object):
 	def save_zwsid(cls, zwsid, zwsid_filename):
 	    pass
 
-
     def get_from_zillow(self, h):
         params = (('zws-id', ZillAPI.ZWSID), ('address', h.street_address), ('citystatezip', h.zip_code), ('rentzestimate', 'true'))
         urlparams = urllib.urlencode(params)
@@ -665,7 +661,7 @@ class RFAPI(object):
         'market': 'boston',
         'mpt': 99,
         'no_outline': 'false',
-        'num_homes': 100, #Could make this 500 or any number to return more results
+        'num_homes': 50, #Could make this 500 or any number to return more results
         'page_number': 1,
         'region_id': 0,
         'region_type': 6,
