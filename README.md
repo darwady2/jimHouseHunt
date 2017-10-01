@@ -16,7 +16,7 @@ How to find the region ID for Redfin:
 3. Region code in this example is 29470
 
 
-To adjust the number of homes scanned, go to 'househunt.py', line 675 ('num_homes') and set the number there. It's currently set at '10' but should probably be around 500 or so to get a meaningful search.
+To adjust the number of homes scanned, go to 'househunt.py', line 675 ('num_homes') and set the number there.
 
 Create a Gmail Account and set your envars by running the following commands in Terminal:
 export GMAIL_EMAIL='gmail@gmail.com'
