@@ -606,7 +606,7 @@ class ZillAPI(object):
 
     ZIL_URL = 'http://www.zillow.com/webservice/GetSearchResults.htm'
     ZIL_XSD = 'http://www.zillow.com/static/xsd/SearchResults.xsd'
-    ZWSID = 'X1-ZWz190v4m6e9e3_8b748'
+    ZWSID = os.environ.get('ZILLOW_API_KEY')
     
     def __init__(self, zwsid=None, zwsid_filename=None, save_zwsid=False):
         if zwsid:
@@ -672,7 +672,7 @@ class RFAPI(object):
         'market': 'boston',
         'mpt': 99,
         'no_outline': 'false',
-        'num_homes': 500, #Could make this any number to return more results
+        'num_homes': 10, #Could make this any number to return more results
         'page_number': 1,
         'region_id': 0,
         'region_type': 6,

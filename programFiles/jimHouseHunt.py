@@ -7,6 +7,15 @@ How to find the region ID for Redfin:
 2. You'll see a URL like this: https://www.redfin.com/city/29470/IL/Chicago
 3. Region code in this example is 29470
 
+To adjust the number of homes scanned, go to 'househunt.py', line 675 ('num_homes') and set the number there.
+
+Create a Gmail Account and set your envars by running the following commands in Terminal:
+export GMAIL_EMAIL='gmail@gmail.com'
+export GMAIL_PASSWORD='xxxxxxxx'
+export ZILLOW_API_KEY='yyyyyyyyy'
+
+Fill out the email list and other customizations in the main function at the bottom.
+
 """
 
 #Requires househunt.py, searchresults.py, and mortgage.py in the working directory to function.
@@ -14,13 +23,10 @@ import mortgage
 
 from househunt import House, Listing, ZillAPI, RFAPI
 
-# using SendGrid's Python Library
-# https://github.com/sendgrid/sendgrid-python
-import sendgrid
 import os
-from sendgrid.helpers.mail import *
+import smtplib
 
-
+from email.mime.text import MIMEText
 
 
 
@@ -30,23 +36,27 @@ def email_matches(matches):
 	for index, listing in enumerate(matches):
 		number = index + 1
 		body += str(number) + ":\n" + str(listing) + "\n\n"
-		print body
+		
+	#Set your email list here
+	email_list = ['email1@gmail.com', 'email2@gmail.com']	
 
+	fromaddr = os.environ.get('GMAIL_EMAIL')
+	password = os.environ.get('GMAIL_PASSWORD')
+
+	message = MIMEText(body)
+	message['Subject'] = 'Daily HouseHunt Email'
+	message['From'] = fromaddr
 	
-	#Sendgrid (getting an unauthorized error)
-	sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
-	from_email = Email("darwady2@gmail.com")
-	email_list = ["darwady2@gmail.com", "jskuros@gmail.com", "dave.bremner2@gmail.com"]
-	for email in email_list:
-		to_email = Email(email)
-		subject = "Your Daily Property Hunt Digest"
-		content = Content("text/plain", body)
-		mail = Mail(from_email, subject, to_email, content)
-		response = sg.client.mail.send.post(request_body=mail.get())
-		print(response.status_code)
-		print(response.body)
-		print(response.headers)
+	server = smtplib.SMTP('smtp.gmail.com:587')
+	server.ehlo()
+	server.starttls()
+	server.login(fromaddr, password)
+
+	for toaddrs in email_list:
+		response = server.sendmail(fromaddr, toaddrs, message.as_string())
+		print response
 	
+	server.quit()
 
 
 def main():
@@ -77,14 +87,14 @@ def main():
         	if listing.house.beds >= beds:
         		listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
         		listing.get_monthly_mortgage(property_tax_rate = property_tax_rate, months = months, interest = interest, amount = listing.zestimate)
-        		print 'Getting Listing #' + str(index)
+        		print 'Getting Listing #' + str(index + 1)
         		try:
         			monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
         			if monthly_income > threshold:
         				matches.append(listing)
         		except:
         			pass
-    print matches
+    #print matches
     email_matches(matches)
 
     
