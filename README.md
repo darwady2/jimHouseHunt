@@ -2,7 +2,9 @@ Requires househunt.py, searchresults.py, and mortgage.py in the working director
 
 Create a Gmail Account and a Zillow API Key, then set your envars by running the following commands in Terminal:
 export GMAIL_EMAIL='gmail@gmail.com'
+
 export GMAIL_PASSWORD='xxxxxxxx'
+
 export ZILLOW_API_KEY='yyyyyyyyy'
 
 
