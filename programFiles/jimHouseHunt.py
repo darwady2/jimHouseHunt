@@ -1,5 +1,9 @@
 """ 
-Hardcoded our Zillow API code into househunt.py (X1-ZWz190v4m6e9e3_8b748). See var ZWSID around line 520. 
+Create a Gmail Account and a Zillow API Key, then set your envars by running the following commands in Terminal:
+export GMAIL_EMAIL='gmail@gmail.com'
+export GMAIL_PASSWORD='xxxxxxxx'
+export ZILLOW_API_KEY='yyyyyyyyy'
+
 
 How to find the region ID for Redfin:
 
@@ -7,14 +11,15 @@ How to find the region ID for Redfin:
 2. You'll see a URL like this: https://www.redfin.com/city/29470/IL/Chicago
 3. Region code in this example is 29470
 
-To adjust the number of homes scanned, go to 'househunt.py', line 675 ('num_homes') and set the number there.
+
+To adjust the number of homes scanned, go to 'househunt.py', line 675 ('num_homes') and set the number there. It's currently set at '10' but should probably be around 500 or so to get a meaningful search.
 
 Create a Gmail Account and set your envars by running the following commands in Terminal:
 export GMAIL_EMAIL='gmail@gmail.com'
 export GMAIL_PASSWORD='xxxxxxxx'
 export ZILLOW_API_KEY='yyyyyyyyy'
 
-Fill out the email list and other customizations in the main function at the bottom.
+Fill out the email list and other customizations in the main function, lines 71 onward.
 
 """
 
@@ -76,7 +81,7 @@ def main():
     home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
     
     #Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
-    threshold = 100
+    threshold = 50
     
     #Below is the script to generate the listings.
     
