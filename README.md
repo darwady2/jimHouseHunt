@@ -1,4 +1,4 @@
-A simple program that scans Zillow and Redfin and returns results that will have an estimated net monthly income of a value, which you can set.
+This is a simple program that scans Zillow and Redfin and returns results that will have an estimated net monthly income of a value, which you can set.
 
 Instructions for use:
 
