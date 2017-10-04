@@ -43,7 +43,7 @@ def email_matches(matches):
 		body += str(number) + ":\n" + str(listing) + "\n\n"
 		
 	#Set your email list here
-	email_list = ['email1@gmail.com', 'email2@gmail.com']	
+	email_list = ['darwady2@gmail.com', 'jskuros@gmail.com', 'dave.bremner2@gmail.com']	
 
 	fromaddr = os.environ.get('GMAIL_EMAIL')
 	password = os.environ.get('GMAIL_PASSWORD')
