@@ -823,7 +823,7 @@ def main():
             listing.get_zestimate()
             matches.append(listing)
     email_matches(matches)
-    print matches
+    print(matches)
 
 if __name__ == '__main__':
     main()
