@@ -1,1 +1,1 @@
-web: python programFiles/jimHouseHunt.py
+web: bin/proximo python programFiles/jimHouseHunt.py
