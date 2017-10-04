@@ -628,29 +628,29 @@ class ZillAPI(object):
 	def save_zwsid(cls, zwsid, zwsid_filename):
 		pass
 
-    def get_from_zillow(self, h):
-        params = (('zws-id', ZillAPI.ZWSID), ('address', h.street_address), ('citystatezip', h.zip_code), ('rentzestimate', 'true'))
-        urlparams = urllib.urlencode(params)
-        zurl = "%s?%s" % (ZillAPI.ZIL_URL, urlparams)
-        req = requests.get(zurl)
-        req_content = req.content
-        req_content_str = StringIO.StringIO(req_content)
-        sr = searchresults.parse(req_content_str, silence=True)
-        return sr
-
-    def get_zestimate(self, sr):
-        zestimates = []
-        if sr.response:
-            for prop in sr.response.results.result:
-                value = prop.zestimate.amount.valueOf_
-                if value not in zestimates:
-                    zestimates.append(value)
-        if len(zestimates) == 1:
-            return zestimates[0]
-        elif len(zestimates) == 0:
-            return None
-        else:
-            return max(zestimates)
+	def get_from_zillow(self, h):
+		params = (('zws-id', ZillAPI.ZWSID), ('address', h.street_address), ('citystatezip', h.zip_code), ('rentzestimate', 'true'))
+		urlparams = urllib.urlencode(params)
+		zurl = "%s?%s" % (ZillAPI.ZIL_URL, urlparams)
+		req = requests.get(zurl)
+		req_content = req.content
+		req_content_str = StringIO.StringIO(req_content)
+		sr = searchresults.parse(req_content_str, silence=True)
+		return sr
+	
+	def get_zestimate(self, sr):
+		zestimates = []
+		if sr.response:
+			for prop in sr.response.results.result:
+				value = prop.zestimate.amount.valueOf_
+				if value not in zestimates:
+					zestimates.append(value)
+		if len(zestimates) == 1:
+			return zestimates[0]
+		elif len(zestimates) == 0:
+			return None
+		else:
+			return max(zestimates)
 
 class RFAPI(object):
 
