@@ -739,7 +739,7 @@ class RFAPI(object):
 		ua = UserAgent()
 		ua.update
 		user_agent = ua.random
-        for dl_url in self.dl_urls:
+		for dl_url in self.dl_urls:
 			headers = { 'User-Agent': user_agent }
 			req = urllib2.Request(dl_url, headers=headers)
 			browse = urllib2.urlopen(req)
