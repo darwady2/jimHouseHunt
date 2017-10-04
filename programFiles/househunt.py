@@ -735,21 +735,21 @@ class RFAPI(object):
 			proxy  = urllib2.ProxyHandler({'http': os.environ.get('PROXIMO_URL', '')})
 			auth   = urllib2.HTTPBasicAuthHandler()
 			opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
-			urllib2.install_opener(opener)    
-        ua = UserAgent()
-        ua.update
-        user_agent = ua.random
+			urllib2.install_opener(opener)
+		ua = UserAgent()
+		ua.update
+		user_agent = ua.random
         for dl_url in self.dl_urls:
-            headers = { 'User-Agent': user_agent }
-            req = urllib2.Request(dl_url, headers=headers)
-            browse = urllib2.urlopen(req)
-            csv_str = browse.read()
-            csv_f = StringIO.StringIO(csv_str)
-            reader = csv.reader(csv_f, delimiter=',')
-            headers = reader.next()
-            for row in reader:
-                ds = zip(headers, row)
-                self.result_sets.append(dict(ds))
+			headers = { 'User-Agent': user_agent }
+			req = urllib2.Request(dl_url, headers=headers)
+			browse = urllib2.urlopen(req)
+			csv_str = browse.read()
+			csv_f = StringIO.StringIO(csv_str)
+			reader = csv.reader(csv_f, delimiter=',')
+			headers = reader.next()
+			for row in reader:
+				ds = zip(headers, row)
+				self.result_sets.append(dict(ds))
 	
 	
     def dataset_to_listings(self):
