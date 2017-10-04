@@ -609,16 +609,16 @@ class ZillAPI(object):
     ZWSID = os.environ.get('ZILLOW_API_KEY')
     
     def __init__(self, zwsid=None, zwsid_filename=None, save_zwsid=False):
-	if zwsid:
-		ZillAPI.set_zwsid(zwsid)
-		if save_zwsid and zwsid_filename:
-			ZillAPI.save_zwsid(zwsid, zwsid_filename)
-		elif save_zwsid and (zwsid_filename is None):
-			raise ValueError("Must provide a zwsid_filename if save_zwsid is True!")
-	elif zwsid_filename:
-		ZillAPI.load_zwsid(zwsid_filename=zwsid_filename)
-	else:
-		zwsid = 'X1-ZWz190v4m6e9e3_8b748'
+		if zwsid:
+			ZillAPI.set_zwsid(zwsid)
+			if save_zwsid and zwsid_filename:
+				ZillAPI.save_zwsid(zwsid, zwsid_filename)
+			elif save_zwsid and (zwsid_filename is None):
+				raise ValueError("Must provide a zwsid_filename if save_zwsid is True!")
+		elif zwsid_filename:
+			ZillAPI.load_zwsid(zwsid_filename=zwsid_filename)
+		else:
+			zwsid = 'X1-ZWz190v4m6e9e3_8b748'
 		
 	@classmethod
 	def set_zwsid(cls, zwsid):
