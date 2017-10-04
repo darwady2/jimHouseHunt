@@ -59,7 +59,7 @@ def email_matches(matches):
 
 	for toaddrs in email_list:
 		response = server.sendmail(fromaddr, toaddrs, message.as_string())
-		print response
+		#print response
 	
 	server.quit()
 
