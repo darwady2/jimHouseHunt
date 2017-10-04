@@ -604,11 +604,11 @@ class ListCache(object):
 
 class ZillAPI(object):
 
-    ZIL_URL = 'http://www.zillow.com/webservice/GetSearchResults.htm'
-    ZIL_XSD = 'http://www.zillow.com/static/xsd/SearchResults.xsd'
-    ZWSID = os.environ.get('ZILLOW_API_KEY')
-    
-    def __init__(self, zwsid=None, zwsid_filename=None, save_zwsid=False):
+	ZIL_URL = 'http://www.zillow.com/webservice/GetSearchResults.htm'
+	ZIL_XSD = 'http://www.zillow.com/static/xsd/SearchResults.xsd'
+	ZWSID = os.environ.get('ZILLOW_API_KEY')
+	
+	def __init__(self, zwsid=None, zwsid_filename=None, save_zwsid=False):
 		if zwsid:
 			ZillAPI.set_zwsid(zwsid)
 			if save_zwsid and zwsid_filename:
