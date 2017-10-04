@@ -736,13 +736,14 @@ class RFAPI(object):
 			auth   = urllib2.HTTPBasicAuthHandler()
 			opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
 			urllib2.install_opener(opener)
-		ua = UserAgent()
-		ua.update
-		user_agent = ua.random
+		#ua = UserAgent()
+		#ua.update
+		#user_agent = ua.random
 		for dl_url in self.dl_urls:
-			headers = { 'User-Agent': user_agent }
-			req = urllib2.Request(dl_url, headers=headers)
-			browse = urllib2.urlopen(req)
+			#headers = { 'User-Agent': user_agent }
+			#req = urllib2.Request(dl_url, headers=headers)
+			#browse = urllib2.urlopen(req)
+			browse = urllib2.urlopen(dl_url)
 			csv_str = browse.read()
 			csv_f = StringIO.StringIO(csv_str)
 			reader = csv.reader(csv_f, delimiter=',')
