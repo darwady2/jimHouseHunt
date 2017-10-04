@@ -92,7 +92,7 @@ def main():
         	if listing.house.beds >= beds:
         		listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
         		listing.get_monthly_mortgage(property_tax_rate = property_tax_rate, months = months, interest = interest, amount = listing.zestimate)
-        		print 'Getting Listing #' + str(index + 1)
+        		print('Getting Listing #' + str(index + 1))
         		try:
         			monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
         			if monthly_income > threshold:
