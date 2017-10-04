@@ -620,15 +620,6 @@ class ZillAPI(object):
         else:
             zwsid = 'X1-ZWz190v4m6e9e3_8b748'
     
-    
-	"""
-	Dan commented out the below and hard-coded the API key into the ZWSID variable above.
-    @classmethod
-    def load_zwsid(cls, zwsid_filename='ZWSID'):
-        with open(os.path.join(os.path.join(os.getcwd(), os.path.dirname(__file__)), zwsid_filename), 'r') as f:
-            cls.ZWSID = f.readline().rstrip()
-	"""
-
 	@classmethod
 	def set_zwsid(cls, zwsid):
 		cls.ZWSID = zwsid
