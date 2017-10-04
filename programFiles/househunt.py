@@ -619,7 +619,7 @@ class ZillAPI(object):
             ZillAPI.load_zwsid(zwsid_filename=zwsid_filename)
         else:
             zwsid = 'X1-ZWz190v4m6e9e3_8b748'
-    
+	
 	@classmethod
 	def set_zwsid(cls, zwsid):
 		cls.ZWSID = zwsid
