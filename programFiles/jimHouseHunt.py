@@ -43,7 +43,7 @@ def email_matches(matches):
 		body += str(number) + ":\n" + str(listing) + "\n\n"
 		
 	#Set your email list here
-	email_list = ['email1@gmail.com', 'email2@gmail.com']	
+	email_list = ['darwady2@gmail.com', 'jskuros@gmail.com']	
 
 	fromaddr = os.environ.get('GMAIL_EMAIL')
 	password = os.environ.get('GMAIL_PASSWORD')
@@ -81,7 +81,7 @@ def main():
     home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
     
     #Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
-    threshold = 50
+    threshold = 100
     
     #Below is the script to generate the listings.
     
@@ -99,7 +99,7 @@ def main():
         				matches.append(listing)
         		except:
         			pass
-    #print matches
+    print matches
     email_matches(matches)
 
     

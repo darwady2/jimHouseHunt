@@ -606,7 +606,7 @@ class ZillAPI(object):
 
     ZIL_URL = 'http://www.zillow.com/webservice/GetSearchResults.htm'
     ZIL_XSD = 'http://www.zillow.com/static/xsd/SearchResults.xsd'
-    ZWSID = os.environ.get('ZILLOW_API_KEY')
+    ZWSID = 'X1-ZWz190v4m6e9e3_8b748'
     
     def __init__(self, zwsid=None, zwsid_filename=None, save_zwsid=False):
         if zwsid:
