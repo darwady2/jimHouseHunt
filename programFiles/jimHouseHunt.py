@@ -64,6 +64,31 @@ def email_matches(matches):
 	server.quit()
 
 
+
+def matches_to_list(matches):
+	entries = []
+	format = []
+	
+	for index, h in enumerate(matches):
+		
+		format.append(h.house)
+		format.append(h.list_price)
+		format.append(h.zestimate)
+		format.append(h.monthly_mortgage)
+		format.append(h.rentzestimate)
+		format.append(h.listing_url)
+		entries.append(format)
+		format = []
+	
+	return entries
+
+def matches_to_sheets(matches):
+	
+	entries = matches_to_list(matches)
+	print entries
+	
+
+
 def main():
 
     matches = []
@@ -81,7 +106,7 @@ def main():
     home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
     
     #Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
-    threshold = 100
+    threshold = -10000
     
     #Below is the script to generate the listings.
     
@@ -99,8 +124,9 @@ def main():
         				matches.append(listing)
         		except:
         			pass
-    print matches
-    email_matches(matches)
+    #print matches
+    matches_to_sheets(matches)
+    #email_matches(matches)
 
     
 if __name__ == '__main__':
