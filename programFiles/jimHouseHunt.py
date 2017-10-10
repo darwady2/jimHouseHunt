@@ -35,15 +35,15 @@ from oauth2client.service_account import ServiceAccountCredentials
  
 
 #Emails the matches to a list of users.
-def email_matches(matches):
+def email_matches(email_matches):
 	
 	body = ''
-	for index, listing in enumerate(matches):
+	for index, listing in enumerate(email_matches):
 		number = index + 1
 		body += str(number) + ":\n" + str(listing) + "\n\n"
 		
 	#Set your email list here
-	email_list = ['darwady2@gmail.com', 'jskuros@gmail.com']	
+	email_list = ['darwady2@gmail.com']	
 
 	fromaddr = os.environ.get('GMAIL_EMAIL')
 	password = os.environ.get('GMAIL_PASSWORD')
@@ -144,7 +144,8 @@ def matches_to_sheets(matches):
 #Main program.
 def main():
 
-	matches = []
+	sheet_match_list = []
+	email_match_list = []
 	
 	#Put region IDs for all regions to search in this list.
 	regions = [29470] #29740 is Chicago. See top comments to add additional region IDs.
@@ -158,28 +159,31 @@ def main():
 	beds = 2  #Filters for at least 2 bedroom properties.
 	home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
 	
-	#Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
-	threshold = 100
+	#Set your income thresholds here; for example, 100 will return homes calculated to make at least $100 per month in net income. 
+	sheet_threshold = -500 #This is how much income it would need to get populated to the Google Sheet.
+	email_threshold = -10 #This is how much income it would need to get sent in an email.
 	
 	#Below is the script to generate the listings.
 	
 	rf_api = RFAPI(region_ids=regions, load_listings=True, get_zestimates=False) 
 	
 	for index, listing in enumerate(rf_api.listings):
-    	#if listing.house.home_type == home_type:
+		#if listing.house.home_type == home_type:
 			if listing.house.beds >= beds:
 				listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
 				listing.get_monthly_mortgage(property_tax_rate = property_tax_rate, months = months, interest = interest, amount = listing.zestimate)
 				print 'Getting Listing #' + str(index + 1)
 				try:
 					monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
-					if monthly_income > threshold:
-						matches.append(listing)
+					if monthly_income > email_threshold:
+						email_match_list.append(listing)
+					if monthly_income > sheet_threshold:
+						sheet_match_list.append(listing)
 				except:
 					pass
 
-	email_matches(matches)
-	matches_to_sheets(matches)
+	email_matches(email_match_list)
+	matches_to_sheets(sheet_match_list)
 	
 
 if __name__ == '__main__':
