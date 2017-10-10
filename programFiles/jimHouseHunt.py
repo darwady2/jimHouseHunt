@@ -149,7 +149,7 @@ def matches_to_sheets(matches):
 	entries = matches_to_list(matches)
 	rangeName = 'Sheet1'
 	value = entries[0][0]
-	value_range_body = {"range":rangeName,"values":entries}
+	value_range_body = {"range":rangeName,"values":[["test"]]}
 	result = service.spreadsheets().values().append(
 		spreadsheetId = spreadsheetId, range = rangeName, body=value_range_body).execute()
 	
