@@ -33,18 +33,6 @@ import gspread
 from email.mime.text import MIMEText
 from oauth2client.service_account import ServiceAccountCredentials
  
- 
-#Authorizes and opens the Google Sheet where the entries will be stored.
-def open_sheet(sheet_name):
-	# use creds to create a client to interact with the Google Drive API
-	scope = ['https://spreadsheets.google.com/feeds']
-	creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
-	client = gspread.authorize(creds)
-
-	# Find a workbook by name and open the first sheet
-	sheet = client.open(sheet_name).sheet1
-	return sheet
-
 
 #Emails the matches to a list of users.
 def email_matches(matches):
@@ -80,10 +68,8 @@ def email_matches(matches):
 
 #Creates a list of lists, with each entry as a home and each subentry with the home's details.
 def matches_to_list(matches):
-	
 	entries = []
 	format = []
-	
 	for index, h in enumerate(matches):
 		format.append(h.house)
 		format.append(h.list_price)
@@ -94,23 +80,37 @@ def matches_to_list(matches):
 		format.append(h.listing_url)
 		entries.append(format)
 		format = []	
-	
 	return entries
 
 
+#Authorizes and opens the Google Sheet where the entries will be stored.
+def open_sheet(sheet_name):
+	# Use creds to create a client to interact with the Google Drive API
+	scope = ['https://spreadsheets.google.com/feeds']
+	creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+	client = gspread.authorize(creds)
+
+	# Find a workbook by name and open the first sheet
+	sheet = client.open(sheet_name).sheet1
+	clear_sheet(sheet)
+	return sheet
+
+
+#Clears the Google Sheet.
+def clear_sheet(sheet):
+	r = sheet.row_count
+	cell_list = sheet.range('A1:G' + str(r))
+	for cell in cell_list:
+		cell.value = ""
+	sheet.update_cells(cell_list)
+	
+
 #Adds the titles to the Google Sheet.
 def add_titles(sheet):
-	
-	#List the title rows of the sheet.
 	titles = ['Address','List Price','Zestimate','Monthly Mortgage','Monthly Rent Estimate','Monthly income','Listing URL']
-		
-	# Select a range
 	cell_list = sheet.range('A1:G1')
-
 	for i, cell in enumerate(cell_list):
 		cell.value = titles[i]
-	
-	# Update in batch
 	sheet.update_cells(cell_list)
 
 
@@ -118,9 +118,6 @@ def add_titles(sheet):
 def range_creator(i):
 	range = 'A' + str(i + 2) + ':G' + str(i + 2)
 	return range
-
-
-#Clears all cells in the worksheet, except for the last cell (monthly income formula cell).
 
 
 #Inserts the matches to the Google Sheet.
@@ -132,21 +129,19 @@ def insert_matches(sheet, entries):
 		for j, cell in enumerate(cell_list):
 			cell.value = entry[j]
 			
-	sheet.update_cells(cell_list) 
+		sheet.update_cells(cell_list) 
 		
 	
-
 #Iterates through each home and places it in a row in sheets.
 def matches_to_sheets(matches):
 	entries = matches_to_list(matches)
 	sheet = open_sheet('Testing House Entry Sheet')
-	#sheet.clear() #Try commenting this out if you're having problems.
 	add_titles(sheet)
 	insert_matches(sheet = sheet, entries = entries)
 	print '\nAdded to Sheets.'
 
 
-
+#Main program.
 def main():
 
 	matches = []
@@ -164,7 +159,7 @@ def main():
 	home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
 	
 	#Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
-	threshold = -10000
+	threshold = 100
 	
 	#Below is the script to generate the listings.
 	
@@ -183,9 +178,9 @@ def main():
 				except:
 					pass
 
-	print matches
+	email_matches(matches)
 	matches_to_sheets(matches)
-	#email_matches(matches)
+	
 
 if __name__ == '__main__':
 	main()
