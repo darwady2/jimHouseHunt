@@ -310,7 +310,7 @@ class Listing(object):
             zestimate = int(zestimate)
         self._zestimate = zestimate
 
-    #Dan added in the below four properties
+    #Dan added in the below six properties
     @property
     def monthly_mortgage(self):
     	return self._monthly_mortgage

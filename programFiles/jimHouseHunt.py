@@ -34,24 +34,19 @@ from email.mime.text import MIMEText
 from oauth2client.service_account import ServiceAccountCredentials
  
  
-def open_sheet():
+#Authorizes and opens the Google Sheet where the entries will be stored.
+def open_sheet(sheet_name):
 	# use creds to create a client to interact with the Google Drive API
 	scope = ['https://spreadsheets.google.com/feeds']
 	creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
 	client = gspread.authorize(creds)
- 
+
 	# Find a workbook by name and open the first sheet
-	# Make sure you use the right name here.
-	sheet = client.open('Testing House Entry Sheet').Sheet1
- 
-	# Extract and print all of the values
-	list_of_hashes = sheet.get_all_records()
-	print(list_of_hashes)
+	sheet = client.open(sheet_name).sheet1
+	return sheet
 
 
-
-
-
+#Emails the matches to a list of users.
 def email_matches(matches):
 	
 	body = ''
@@ -79,7 +74,8 @@ def email_matches(matches):
 		#print response
 	
 	server.quit()
-
+	
+	print '\nEmailed results.'
 
 
 #Creates a list of lists, with each entry as a home and each subentry with the home's details.
@@ -94,6 +90,7 @@ def matches_to_list(matches):
 		format.append(h.zestimate)
 		format.append(h.monthly_mortgage)
 		format.append(h.rentzestimate)
+		format.append(h.rentzestimate - h.monthly_mortgage)
 		format.append(h.listing_url)
 		entries.append(format)
 		format = []	
@@ -101,13 +98,57 @@ def matches_to_list(matches):
 	return entries
 
 
+#Adds the titles to the Google Sheet.
+def add_titles(sheet):
+	
+	#List the title rows of the sheet.
+	titles = ['Address','List Price','Zestimate','Monthly Mortgage','Monthly Rent Estimate','Monthly income','Listing URL']
+		
+	# Select a range
+	cell_list = sheet.range('A1:G1')
+
+	for i, cell in enumerate(cell_list):
+		cell.value = titles[i]
+	
+	# Update in batch
+	sheet.update_cells(cell_list)
+
+
+#Creates a range for inserting the matches into the Google Sheet.
+def range_creator(i):
+	range = 'A' + str(i + 2) + ':G' + str(i + 2)
+	return range
+
+
+#Clears all cells in the worksheet, except for the last cell (monthly income formula cell).
+
+
+#Inserts the matches to the Google Sheet.
+def insert_matches(sheet, entries):
+	for i, entry in enumerate(entries):
+		cellRange = range_creator(i)
+		cell_list = sheet.range(cellRange)
+		
+		for j, cell in enumerate(cell_list):
+			cell.value = entry[j]
+			
+	sheet.update_cells(cell_list) 
+		
+	
+
 #Iterates through each home and places it in a row in sheets.
 def matches_to_sheets(matches):
 	entries = matches_to_list(matches)
-	return entries
+	sheet = open_sheet('Testing House Entry Sheet')
+	#sheet.clear() #Try commenting this out if you're having problems.
+	add_titles(sheet)
+	insert_matches(sheet = sheet, entries = entries)
+	print '\nAdded to Sheets.'
+
+
 
 def main():
-	"""
+
 	matches = []
 	
 	#Put region IDs for all regions to search in this list.
@@ -131,22 +172,20 @@ def main():
 	
 	for index, listing in enumerate(rf_api.listings):
     	#if listing.house.home_type == home_type:
-        	if listing.house.beds >= beds:
-        		listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
-        		listing.get_monthly_mortgage(property_tax_rate = property_tax_rate, months = months, interest = interest, amount = listing.zestimate)
-        		print 'Getting Listing #' + str(index + 1)
-        		try:
-        			monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
-        			if monthly_income > threshold:
-        				matches.append(listing)
+			if listing.house.beds >= beds:
+				listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
+				listing.get_monthly_mortgage(property_tax_rate = property_tax_rate, months = months, interest = interest, amount = listing.zestimate)
+				print 'Getting Listing #' + str(index + 1)
+				try:
+					monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
+					if monthly_income > threshold:
+						matches.append(listing)
 				except:
 					pass
-	#print matches
+
+	print matches
 	matches_to_sheets(matches)
 	#email_matches(matches)
-	"""
-	
-	open_sheet()
-	
+
 if __name__ == '__main__':
 	main()
