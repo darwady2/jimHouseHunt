@@ -43,7 +43,7 @@ def email_matches(email_matches):
 		body += str(number) + ":\n" + str(listing) + "\n\n"
 		
 	#Set your email list here
-	email_list = ['darwady2@gmail.com']	
+	email_list = ['darwady2@gmail.com', 'jskuros@gmail.com']	
 
 	fromaddr = os.environ.get('GMAIL_EMAIL')
 	password = os.environ.get('GMAIL_PASSWORD')
@@ -160,8 +160,8 @@ def main():
 	home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
 	
 	#Set your income thresholds here; for example, 100 will return homes calculated to make at least $100 per month in net income. 
-	sheet_threshold = -500 #This is how much income it would need to get populated to the Google Sheet.
-	email_threshold = -10 #This is how much income it would need to get sent in an email.
+	sheet_threshold = 100 #This is how much income it would need to get populated to the Google Sheet.
+	email_threshold = 500 #This is how much income it would need to get sent in an email.
 	
 	#Below is the script to generate the listings.
 	
