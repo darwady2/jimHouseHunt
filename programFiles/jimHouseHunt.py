@@ -25,17 +25,28 @@ Fill out the email list and other customizations in the main function, lines 71 
 
 #Requires househunt.py, searchresults.py, and mortgage.py in the working directory to function.
 import mortgage
-
 from househunt import House, Listing, ZillAPI, RFAPI
-
 import os
 import httplib2
 import smtplib
-
+import gspread
 from email.mime.text import MIMEText
-
-from apiclient import discovery
-
+from oauth2client.service_account import ServiceAccountCredentials
+ 
+ 
+def open_sheet():
+	# use creds to create a client to interact with the Google Drive API
+	scope = ['https://spreadsheets.google.com/feeds']
+	creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+	client = gspread.authorize(creds)
+ 
+	# Find a workbook by name and open the first sheet
+	# Make sure you use the right name here.
+	sheet = client.open('Testing House Entry Sheet').Sheet1
+ 
+	# Extract and print all of the values
+	list_of_hashes = sheet.get_all_records()
+	print(list_of_hashes)
 
 
 
@@ -96,29 +107,29 @@ def matches_to_sheets(matches):
 	return entries
 
 def main():
-
-    matches = []
-    
-    #Put region IDs for all regions to search in this list.
-    regions = [29470] #29740 is Chicago. See top comments to add additional region IDs.
-    
-    #Set mortgage calculation details here.
-    property_tax_rate = 0.0344 # 3.44% tax rate, median for Cook County.
-    months = 360 # 30 year mortgage.
-    interest = 0.04 # 4% rate.
-    
-    #Set property filters here.
-    beds = 2  #Filters for at least 2 bedroom properties.
-    home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
-    
-    #Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
-    threshold = -10000
-    
-    #Below is the script to generate the listings.
-    
-    rf_api = RFAPI(region_ids=regions, load_listings=True, get_zestimates=False) 
-    
-    for index, listing in enumerate(rf_api.listings):
+	"""
+	matches = []
+	
+	#Put region IDs for all regions to search in this list.
+	regions = [29470] #29740 is Chicago. See top comments to add additional region IDs.
+	
+	#Set mortgage calculation details here.
+	property_tax_rate = 0.0344 # 3.44% tax rate, median for Cook County.
+	months = 360 # 30 year mortgage.
+	interest = 0.04 # 4% rate.
+	
+	#Set property filters here.
+	beds = 2  #Filters for at least 2 bedroom properties.
+	home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
+	
+	#Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
+	threshold = -10000
+	
+	#Below is the script to generate the listings.
+	
+	rf_api = RFAPI(region_ids=regions, load_listings=True, get_zestimates=False) 
+	
+	for index, listing in enumerate(rf_api.listings):
     	#if listing.house.home_type == home_type:
         	if listing.house.beds >= beds:
         		listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
@@ -128,12 +139,14 @@ def main():
         			monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
         			if monthly_income > threshold:
         				matches.append(listing)
-        		except:
-        			pass
-    #print matches
-    matches_to_sheets(matches)
-    #email_matches(matches)
-
-    
+				except:
+					pass
+	#print matches
+	matches_to_sheets(matches)
+	#email_matches(matches)
+	"""
+	
+	open_sheet()
+	
 if __name__ == '__main__':
-    main()
+	main()
