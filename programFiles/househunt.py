@@ -672,7 +672,7 @@ class RFAPI(object):
         'market': 'boston',
         'mpt': 99,
         'no_outline': 'false',
-        'num_homes': 10, #Could make this any number to return more results
+        'num_homes': 1000, #Could make this any number to return more results
         'page_number': 1,
         'region_id': 0,
         'region_type': 6,
