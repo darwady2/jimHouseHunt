@@ -50,8 +50,6 @@ def email_matches(email_matches):
 	email_list.append(toaddr1)
 	email_list.append(toaddr2)
 
-	#email_list = ['email1@gmail.com', 'email2@gmail.com']	
-
 	#Adds "From" email from your Envars.
 	fromaddr = os.environ.get('GMAIL_EMAIL')
 	password = os.environ.get('GMAIL_PASSWORD')
@@ -95,14 +93,14 @@ def matches_to_list(matches):
 
 
 #Authorizes and opens the Google Sheet where the entries will be stored.
-def open_sheet(sheet_name):
+def open_sheet():
 	# Use creds to create a client to interact with the Google Drive API
 	scope = ['https://spreadsheets.google.com/feeds']
 	creds = ServiceAccountCredentials.from_json_keyfile_name('/Users/darwady/Documents/Github/apiKeys/client_secret_jimHouseHunt.json', scope)
 	client = gspread.authorize(creds)
 
 	# Find a workbook by name and open the first sheet
-	sheet = client.open(sheet_name).sheet1
+	sheet = client.open_by_key('1Ne-S5Nuzu5NrxoZV6S9ejf5oN3OU4fdadDn6oObeMAo').sheet1
 	clear_sheet(sheet)
 	return sheet
 
@@ -146,7 +144,7 @@ def insert_matches(sheet, entries):
 #Iterates through each home and places it in a row in sheets.
 def matches_to_sheets(matches):
 	entries = matches_to_list(matches)
-	sheet = open_sheet('Jim HouseHunt Entry Sheet')
+	sheet = open_sheet()
 	add_titles(sheet)
 	insert_matches(sheet = sheet, entries = entries)
 	print '\nAdded to Sheets.'
@@ -172,8 +170,8 @@ def main():
 	
 	#Set your income thresholds here; for example, 100 will return homes calculated to make at least $100 per month in net income. 
 	hoa_fees = 400 #An estimate of how much HOA fees will cost, on average. This is not exposed in the Zillow API or on Redfin, so this is an estimate.
-	sheet_threshold = -10000 #This is how much income it would need, over and above HOA Fees, to get populated to the Google Sheet.
-	email_threshold = -1100 #This is how much income it would need, over and above HOA Fees, to get sent in an email.
+	sheet_threshold = 100 #This is how much income it would need, over and above HOA Fees, to get populated to the Google Sheet.
+	email_threshold = 500 #This is how much income it would need, over and above HOA Fees, to get sent in an email.
 	
 	#Below is the script to generate the listings.
 	
@@ -196,6 +194,7 @@ def main():
 
 	email_matches(email_match_list)
 	matches_to_sheets(sheet_match_list)
+	print '\nDone.\n'
 	
 
 if __name__ == '__main__':
