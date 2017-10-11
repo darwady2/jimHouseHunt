@@ -1,4 +1,4 @@
-""" 
+"""
 Create a Gmail Account and a Zillow API Key, then set your envars by running the following commands in Terminal:
 export GMAIL_EMAIL='gmail@gmail.com'
 export GMAIL_PASSWORD='xxxxxxxx'
@@ -32,17 +32,17 @@ import smtplib
 import gspread
 from email.mime.text import MIMEText
 from oauth2client.service_account import ServiceAccountCredentials
- 
+
 
 #Emails the matches to a list of users.
 def email_matches(email_matches):
-	
+
 	#Cycles through the houses and formats them appropriately for the email body.
 	body = ''
 	for index, listing in enumerate(email_matches):
 		number = index + 1
 		body += str(number) + ":\n" + str(listing) + "\n\n"
-		
+
 	#Adds "To" emails from your Envars.
 	toaddr1 = os.environ.get('TO_EMAIL_1')
 	toaddr2 = os.environ.get('TO_EMAIL_2')
@@ -58,7 +58,7 @@ def email_matches(email_matches):
 	message = MIMEText(body)
 	message['Subject'] = 'Daily HouseHunt Email'
 	message['From'] = fromaddr
-	
+
 	#Configures the server.
 	server = smtplib.SMTP('smtp.gmail.com:587')
 	server.ehlo()
@@ -69,9 +69,9 @@ def email_matches(email_matches):
 	for toaddrs in email_list:
 		response = server.sendmail(fromaddr, toaddrs, message.as_string())
 		#print response
-	
+
 	server.quit()
-	
+
 	print '\nEmailed results.'
 
 
@@ -88,7 +88,7 @@ def matches_to_list(matches):
 		format.append(h.rentzestimate - h.monthly_mortgage)
 		format.append(h.listing_url)
 		entries.append(format)
-		format = []	
+		format = []
 	return entries
 
 
@@ -105,14 +105,14 @@ def open_sheet():
 	return sheet
 
 
-#Clears the Google Sheet.
+#Clears the current Google Sheet.
 def clear_sheet(sheet):
 	r = sheet.row_count
 	cell_list = sheet.range('A1:G' + str(r))
 	for cell in cell_list:
 		cell.value = ""
 	sheet.update_cells(cell_list)
-	
+
 
 #Adds the titles to the Google Sheet.
 def add_titles(sheet):
@@ -134,13 +134,13 @@ def insert_matches(sheet, entries):
 	for i, entry in enumerate(entries):
 		cellRange = range_creator(i)
 		cell_list = sheet.range(cellRange)
-		
+
 		for j, cell in enumerate(cell_list):
 			cell.value = entry[j]
-			
-		sheet.update_cells(cell_list) 
-		
-	
+
+		sheet.update_cells(cell_list)
+
+
 #Iterates through each home and places it in a row in sheets.
 def matches_to_sheets(matches):
 	entries = matches_to_list(matches)
@@ -155,28 +155,28 @@ def main():
 
 	sheet_match_list = []
 	email_match_list = []
-	
+
 	#Put region IDs for all regions to search in this list.
 	regions = [29470] #29740 is Chicago. See top comments to add additional region IDs.
-	
+
 	#Set mortgage calculation details here.
 	property_tax_rate = 0.0344 # 3.44% tax rate, median for Cook County.
 	months = 360 # 30 year mortgage.
 	interest = 0.04 # 4% rate.
-	
+
 	#Set property filters here.
 	beds = 2  #Filters for at least 2 bedroom properties.
 	home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
-	
-	#Set your income thresholds here; for example, 100 will return homes calculated to make at least $100 per month in net income. 
+
+	#Set your income thresholds here; for example, 100 will return homes calculated to make at least $100 per month in net income.
 	hoa_fees = 400 #An estimate of how much HOA fees will cost, on average. This is not exposed in the Zillow API or on Redfin, so this is an estimate.
 	sheet_threshold = 100 #This is how much income it would need, over and above HOA Fees, to get populated to the Google Sheet.
 	email_threshold = 500 #This is how much income it would need, over and above HOA Fees, to get sent in an email.
-	
+
 	#Below is the script to generate the listings.
-	
-	rf_api = RFAPI(region_ids=regions, load_listings=True, get_zestimates=False) 
-	
+
+	rf_api = RFAPI(region_ids=regions, load_listings=True, get_zestimates=False)
+
 	for index, listing in enumerate(rf_api.listings):
 		#if listing.house.home_type == home_type:
 			if listing.house.beds >= beds:
@@ -195,7 +195,7 @@ def main():
 	email_matches(email_match_list)
 	matches_to_sheets(sheet_match_list)
 	print '\nDone.\n'
-	
+
 
 if __name__ == '__main__':
 	main()
