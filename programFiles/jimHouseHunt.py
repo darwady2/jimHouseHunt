@@ -37,26 +37,37 @@ from oauth2client.service_account import ServiceAccountCredentials
 #Emails the matches to a list of users.
 def email_matches(email_matches):
 	
+	#Cycles through the houses and formats them appropriately for the email body.
 	body = ''
 	for index, listing in enumerate(email_matches):
 		number = index + 1
 		body += str(number) + ":\n" + str(listing) + "\n\n"
 		
-	#Set your email list here
-	email_list = ['darwady2@gmail.com', 'jskuros@gmail.com']	
+	#Adds "To" emails from your Envars.
+	toaddr1 = os.environ.get('TO_EMAIL_1')
+	toaddr2 = os.environ.get('TO_EMAIL_2')
+	email_list = []
+	email_list.append(toaddr1)
+	email_list.append(toaddr2)
 
+	#email_list = ['email1@gmail.com', 'email2@gmail.com']	
+
+	#Adds "From" email from your Envars.
 	fromaddr = os.environ.get('GMAIL_EMAIL')
 	password = os.environ.get('GMAIL_PASSWORD')
 
+	#Sets the message up.
 	message = MIMEText(body)
 	message['Subject'] = 'Daily HouseHunt Email'
 	message['From'] = fromaddr
 	
+	#Configures the server.
 	server = smtplib.SMTP('smtp.gmail.com:587')
 	server.ehlo()
 	server.starttls()
 	server.login(fromaddr, password)
 
+	#Sends the email to each email in the list.
 	for toaddrs in email_list:
 		response = server.sendmail(fromaddr, toaddrs, message.as_string())
 		#print response
@@ -162,7 +173,7 @@ def main():
 	#Set your income thresholds here; for example, 100 will return homes calculated to make at least $100 per month in net income. 
 	hoa_fees = 400 #An estimate of how much HOA fees will cost, on average. This is not exposed in the Zillow API or on Redfin, so this is an estimate.
 	sheet_threshold = -10000 #This is how much income it would need, over and above HOA Fees, to get populated to the Google Sheet.
-	email_threshold = -50 #This is how much income it would need, over and above HOA Fees, to get sent in an email.
+	email_threshold = -1100 #This is how much income it would need, over and above HOA Fees, to get sent in an email.
 	
 	#Below is the script to generate the listings.
 	
