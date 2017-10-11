@@ -87,7 +87,7 @@ def matches_to_list(matches):
 def open_sheet(sheet_name):
 	# Use creds to create a client to interact with the Google Drive API
 	scope = ['https://spreadsheets.google.com/feeds']
-	creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+	creds = ServiceAccountCredentials.from_json_keyfile_name('/Users/darwady/Documents/Github/apiKeys/client_secret_jimHouseHunt.json', scope)
 	client = gspread.authorize(creds)
 
 	# Find a workbook by name and open the first sheet
@@ -135,7 +135,7 @@ def insert_matches(sheet, entries):
 #Iterates through each home and places it in a row in sheets.
 def matches_to_sheets(matches):
 	entries = matches_to_list(matches)
-	sheet = open_sheet('Testing House Entry Sheet')
+	sheet = open_sheet('Jim HouseHunt Entry Sheet')
 	add_titles(sheet)
 	insert_matches(sheet = sheet, entries = entries)
 	print '\nAdded to Sheets.'
@@ -160,8 +160,9 @@ def main():
 	home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
 	
 	#Set your income thresholds here; for example, 100 will return homes calculated to make at least $100 per month in net income. 
-	sheet_threshold = 100 #This is how much income it would need to get populated to the Google Sheet.
-	email_threshold = 500 #This is how much income it would need to get sent in an email.
+	hoa_fees = 400 #An estimate of how much HOA fees will cost, on average. This is not exposed in the Zillow API or on Redfin, so this is an estimate.
+	sheet_threshold = -10000 #This is how much income it would need, over and above HOA Fees, to get populated to the Google Sheet.
+	email_threshold = -50 #This is how much income it would need, over and above HOA Fees, to get sent in an email.
 	
 	#Below is the script to generate the listings.
 	
@@ -175,9 +176,9 @@ def main():
 				print 'Getting Listing #' + str(index + 1)
 				try:
 					monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
-					if monthly_income > email_threshold:
+					if monthly_income - hoa_fees > email_threshold:
 						email_match_list.append(listing)
-					if monthly_income > sheet_threshold:
+					if monthly_income - hoa_fees > sheet_threshold:
 						sheet_match_list.append(listing)
 				except:
 					pass
