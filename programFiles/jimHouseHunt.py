@@ -87,7 +87,7 @@ def matches_to_list(matches):
 def open_sheet(sheet_name):
 	# Use creds to create a client to interact with the Google Drive API
 	scope = ['https://spreadsheets.google.com/feeds']
-	creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+	creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret_jimHouseHunt.json', scope)
 	client = gspread.authorize(creds)
 
 	# Find a workbook by name and open the first sheet
@@ -135,7 +135,7 @@ def insert_matches(sheet, entries):
 #Iterates through each home and places it in a row in sheets.
 def matches_to_sheets(matches):
 	entries = matches_to_list(matches)
-	sheet = open_sheet('Testing House Entry Sheet')
+	sheet = open_sheet('Jim HouseHunt Entry Sheet')
 	add_titles(sheet)
 	insert_matches(sheet = sheet, entries = entries)
 	print '\nAdded to Sheets.'
