@@ -15,7 +15,7 @@ export GMAIL_PASSWORD='password'
 export TO_EMAIL_1='toemail1@gmail.com’
 export TO_EMAIL_2='toemail2@gmail.com’
 
-5. Set your other customizations in the main function, lines 71 onward.
+5. Set any other customizations in the main function, lines 71 onward.
 
 6. Run the script.
 
