@@ -42,6 +42,12 @@ def email_matches(email_matches):
 	for index, listing in enumerate(email_matches):
 		number = index + 1
 		body += str(number) + ":\n" + str(listing) + "\n\n"
+<<<<<<< HEAD
+		
+	#Set your email list here
+	email_list = ['darwady2@gmail.com', 'jskuros@gmail.com', 'dave.bremner2@gmail.com']	
+=======
+>>>>>>> master
 
 	#Adds "To" emails from your Envars.
 	toaddr1 = os.environ.get('TO_EMAIL_1')
@@ -69,7 +75,11 @@ def email_matches(email_matches):
 	for toaddrs in email_list:
 		response = server.sendmail(fromaddr, toaddrs, message.as_string())
 		#print response
+<<<<<<< HEAD
+	
+=======
 
+>>>>>>> master
 	server.quit()
 
 	print '\nEmailed results.'
@@ -153,6 +163,47 @@ def matches_to_sheets(matches):
 #Main program.
 def main():
 
+<<<<<<< HEAD
+    matches = []
+    
+    #Put region IDs for all regions to search in this list.
+    regions = [29470] #29740 is Chicago. See top comments to add additional region IDs.
+    
+    #Set mortgage calculation details here.
+    property_tax_rate = 0.0344 # 3.44% tax rate, median for Cook County.
+    months = 360 # 30 year mortgage.
+    interest = 0.04 # 4% rate.
+    
+    #Set property filters here.
+    beds = 2  #Filters for at least 2 bedroom properties.
+    home_type = 'Condo/Co-op'  #Not being used, so we can see all home types. Uncomment line 73 if you want to use it. Available types: 'Single Family Residential'; 'Condo/Co-op'; 'Townhouse'
+    
+    #Set your income threshold here; for example, 100 will return homes calculated to make at least $100 per month in net income.
+    threshold = 50
+    
+    #Below is the script to generate the listings.
+    
+    rf_api = RFAPI(region_ids=regions, load_listings=True, get_zestimates=False) 
+    
+    for index, listing in enumerate(rf_api.listings):
+    	#if listing.house.home_type == home_type:
+        	if listing.house.beds >= beds:
+        		listing.get_zestimate()   #Gets Zestimate and RentZestimate for narrowed down list.
+        		listing.get_monthly_mortgage(property_tax_rate = property_tax_rate, months = months, interest = interest, amount = listing.zestimate)
+        		print('Getting Listing #' + str(index + 1))
+        		try:
+        			monthly_income = listing.monthly_income(rent = listing.rentzestimate, mortgage = listing.monthly_mortgage)
+        			if monthly_income > threshold:
+        				matches.append(listing)
+        		except:
+        			pass
+    #print matches
+    email_matches(matches)
+
+    
+if __name__ == '__main__':
+    main()
+=======
 	sheet_match_list = []
 	email_match_list = []
 
@@ -199,3 +250,4 @@ def main():
 
 if __name__ == '__main__':
 	main()
+>>>>>>> master
