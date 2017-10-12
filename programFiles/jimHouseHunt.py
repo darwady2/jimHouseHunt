@@ -43,7 +43,7 @@ def email_matches(email_matches):
 		number = index + 1
 		body += str(number) + ":\n" + str(listing) + "\n\n"
 
-	#Adds "To" emails from your Envars.
+	#Adds "To" emails from Envars.
 	toaddr1 = os.environ.get('TO_EMAIL_1')
 	toaddr2 = os.environ.get('TO_EMAIL_2')
 	email_list = []
