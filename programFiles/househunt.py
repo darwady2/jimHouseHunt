@@ -310,7 +310,7 @@ class Listing(object):
             zestimate = int(zestimate)
         self._zestimate = zestimate
 
-    #Dan added in the below four properties
+    #Dan added in the below six properties
     @property
     def monthly_mortgage(self):
     	return self._monthly_mortgage
@@ -604,6 +604,7 @@ class ListCache(object):
 
 class ZillAPI(object):
 
+<<<<<<< HEAD
 	ZIL_URL = 'http://www.zillow.com/webservice/GetSearchResults.htm'
 	ZIL_XSD = 'http://www.zillow.com/static/xsd/SearchResults.xsd'
 	ZWSID = os.environ.get('ZILLOW_API_KEY')
@@ -620,6 +621,33 @@ class ZillAPI(object):
 		else:
 			zwsid = 'X1-ZWz190v4m6e9e3_8b748'
 		
+=======
+    ZIL_URL = 'http://www.zillow.com/webservice/GetSearchResults.htm'
+    ZIL_XSD = 'http://www.zillow.com/static/xsd/SearchResults.xsd'
+    ZWSID = 'X1-ZWz190v4m6e9e3_8b748'
+    
+    def __init__(self, zwsid=None, zwsid_filename=None, save_zwsid=False):
+        if zwsid:
+            ZillAPI.set_zwsid(zwsid)
+            if save_zwsid and zwsid_filename:
+                ZillAPI.save_zwsid(zwsid, zwsid_filename)
+            elif save_zwsid and (zwsid_filename is None):
+                raise ValueError("Must provide a zwsid_filename if save_zwsid is True!")
+        elif zwsid_filename:
+            ZillAPI.load_zwsid(zwsid_filename=zwsid_filename)
+        else:
+            zwsid = 'X1-ZWz190v4m6e9e3_8b748'
+    
+    
+	"""
+	Dan commented out the below and hard-coded the API key into the ZWSID variable above.
+    @classmethod
+    def load_zwsid(cls, zwsid_filename='ZWSID'):
+        with open(os.path.join(os.path.join(os.getcwd(), os.path.dirname(__file__)), zwsid_filename), 'r') as f:
+            cls.ZWSID = f.readline().rstrip()
+	"""
+
+>>>>>>> master
 	@classmethod
 	def set_zwsid(cls, zwsid):
 		cls.ZWSID = zwsid
@@ -663,7 +691,7 @@ class RFAPI(object):
         'market': 'boston',
         'mpt': 99,
         'no_outline': 'false',
-        'num_homes': 500, #Could make this any number to return more results
+        'num_homes': 950, #Could make this any number to return more results
         'page_number': 1,
         'region_id': 0,
         'region_type': 6,
