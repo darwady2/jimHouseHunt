@@ -50,7 +50,7 @@ def email_matches(email_matches):
 	email_list.append(toaddr1)
 	email_list.append(toaddr2)
 
-	#Adds "From" email from your Envars.
+	#Adds "From" email from Envars.
 	fromaddr = os.environ.get('GMAIL_EMAIL')
 	password = os.environ.get('GMAIL_PASSWORD')
 
