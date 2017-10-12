@@ -1,4 +1,4 @@
-# househunt.py dan
+# househunt.py
 
 import os
 import hashlib
@@ -604,24 +604,6 @@ class ListCache(object):
 
 class ZillAPI(object):
 
-<<<<<<< HEAD
-	ZIL_URL = 'http://www.zillow.com/webservice/GetSearchResults.htm'
-	ZIL_XSD = 'http://www.zillow.com/static/xsd/SearchResults.xsd'
-	ZWSID = os.environ.get('ZILLOW_API_KEY')
-	
-	def __init__(self, zwsid=None, zwsid_filename=None, save_zwsid=False):
-		if zwsid:
-			ZillAPI.set_zwsid(zwsid)
-			if save_zwsid and zwsid_filename:
-				ZillAPI.save_zwsid(zwsid, zwsid_filename)
-			elif save_zwsid and (zwsid_filename is None):
-				raise ValueError("Must provide a zwsid_filename if save_zwsid is True!")
-		elif zwsid_filename:
-			ZillAPI.load_zwsid(zwsid_filename=zwsid_filename)
-		else:
-			zwsid = 'X1-ZWz190v4m6e9e3_8b748'
-		
-=======
     ZIL_URL = 'http://www.zillow.com/webservice/GetSearchResults.htm'
     ZIL_XSD = 'http://www.zillow.com/static/xsd/SearchResults.xsd'
     ZWSID = 'X1-ZWz190v4m6e9e3_8b748'
@@ -647,38 +629,37 @@ class ZillAPI(object):
             cls.ZWSID = f.readline().rstrip()
 	"""
 
->>>>>>> master
 	@classmethod
 	def set_zwsid(cls, zwsid):
 		cls.ZWSID = zwsid
-	
+
 	@classmethod
 	def save_zwsid(cls, zwsid, zwsid_filename):
-		pass
+	    pass
 
-	def get_from_zillow(self, h):
-		params = (('zws-id', ZillAPI.ZWSID), ('address', h.street_address), ('citystatezip', h.zip_code), ('rentzestimate', 'true'))
-		urlparams = urllib.urlencode(params)
-		zurl = "%s?%s" % (ZillAPI.ZIL_URL, urlparams)
-		req = requests.get(zurl)
-		req_content = req.content
-		req_content_str = StringIO.StringIO(req_content)
-		sr = searchresults.parse(req_content_str, silence=True)
-		return sr
-	
-	def get_zestimate(self, sr):
-		zestimates = []
-		if sr.response:
-			for prop in sr.response.results.result:
-				value = prop.zestimate.amount.valueOf_
-				if value not in zestimates:
-					zestimates.append(value)
-		if len(zestimates) == 1:
-			return zestimates[0]
-		elif len(zestimates) == 0:
-			return None
-		else:
-			return max(zestimates)
+    def get_from_zillow(self, h):
+        params = (('zws-id', ZillAPI.ZWSID), ('address', h.street_address), ('citystatezip', h.zip_code), ('rentzestimate', 'true'))
+        urlparams = urllib.urlencode(params)
+        zurl = "%s?%s" % (ZillAPI.ZIL_URL, urlparams)
+        req = requests.get(zurl)
+        req_content = req.content
+        req_content_str = StringIO.StringIO(req_content)
+        sr = searchresults.parse(req_content_str, silence=True)
+        return sr
+
+    def get_zestimate(self, sr):
+        zestimates = []
+        if sr.response:
+            for prop in sr.response.results.result:
+                value = prop.zestimate.amount.valueOf_
+                if value not in zestimates:
+                    zestimates.append(value)
+        if len(zestimates) == 1:
+            return zestimates[0]
+        elif len(zestimates) == 0:
+            return None
+        else:
+            return max(zestimates)
 
 class RFAPI(object):
 
@@ -759,27 +740,20 @@ class RFAPI(object):
             self.build_dl_urls()
 
     def retrieve_dls(self):
-		"""
-		if os.environ.get('PROXIMO_URL', '') != '':
-			proxy  = urllib2.ProxyHandler({'http': os.environ.get('PROXIMO_URL', '')})
-			auth   = urllib2.HTTPBasicAuthHandler()
-			opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
-			urllib2.install_opener(opener)
-		"""
-		ua = UserAgent()
-		ua.update
-		user_agent = ua.random
-		for dl_url in self.dl_urls:
-			headers = { 'User-Agent': user_agent }
-			req = urllib2.Request(dl_url, headers=headers)
-			browse = urllib2.urlopen(req)
-			csv_str = browse.read()
-			csv_f = StringIO.StringIO(csv_str)
-			reader = csv.reader(csv_f, delimiter=',')
-			headers = reader.next()
-			for row in reader:
-				ds = zip(headers, row)
-				self.result_sets.append(dict(ds))
+        ua = UserAgent()
+        ua.update
+        user_agent = ua.random
+        for dl_url in self.dl_urls:
+            headers = { 'User-Agent': user_agent }
+            req = urllib2.Request(dl_url, headers=headers)
+            browse = urllib2.urlopen(req)
+            csv_str = browse.read()
+            csv_f = StringIO.StringIO(csv_str)
+            reader = csv.reader(csv_f, delimiter=',')
+            headers = reader.next()
+            for row in reader:
+                ds = zip(headers, row)
+                self.result_sets.append(dict(ds))
 	
 	
     def dataset_to_listings(self):
@@ -849,7 +823,7 @@ def main():
             listing.get_zestimate()
             matches.append(listing)
     email_matches(matches)
-    print(matches)
+    print matches
 
 if __name__ == '__main__':
     main()
