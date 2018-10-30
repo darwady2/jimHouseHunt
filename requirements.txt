@@ -1,6 +1,6 @@
 lxml==3.7.3
 tinydb==3.5.0
-requests==2.14.2
+requests>=2.20.0
 xmltodict==0.11.0
 fake-useragent==0.1.7
 oauth2client==4.1.2
